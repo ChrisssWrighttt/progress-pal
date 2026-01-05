@@ -67,6 +67,7 @@ let weightChartInstance = null;
 // ===== UI HELPERS =====
 
 function showMainApp() {
+  document.getElementById("usernameLoginScreen").style.display = "none";
   login.style.display = 'none';
   mainApp.style.display = 'flex';
   setTimeout(() => mainApp.classList.add('show'), 50);
@@ -711,4 +712,5 @@ function checkUsername() {
       console.error("Error checking username:", err);
       alert("There was an error checking the username.");
     });
+
 }
