@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Pal</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+
+  <!-- Splash / Welcome Screen -->
+  <div id="splashScreen" class="screen">
+    <div class="overlay">
+      <h1 id="appName">Progress Pal</h1>
+      <p id="slogan">Track. Share. Grow.</p>
+    </div>
+  </div>
+
+  <div id="usernameLoginScreen">
+  <input id="loginUsernameInput" placeholder="Enter username">
+  <button onclick="checkUsername()">Continue</button>
+</div>
+
+<!-- Login / Username Screen -->
+<div id="loginScreen" class="screen">
+  <div class="overlay">
+    <h2>Welcome</h2>
+
+    <div class="login-form">
+      <!-- First and Last Name Row -->
+      <div class="form-row-two">
+        <div class="form-group-half">
+          <label for="firstNameInput">First Name</label>
+          <input type="text" id="firstNameInput" placeholder="">
+        </div>
+        <div class="form-group-half">
+          <label for="lastNameInput">Last Name</label>
+          <input type="text" id="lastNameInput" placeholder="">
+        </div>
+      </div>
+
+      <!-- Username Row -->
+      <div class="form-row-full">
+        <label for="usernameInput">Username</label>
+        <input type="text" id="usernameInput" placeholder="">
+      </div>
+
+      <!-- Date of Birth Row -->
+      <div class="form-row-full">
+        <label for="dobInput">Date of Birth</label>
+        <input type="date" id="dobInput">
+      </div>
+
+      <!-- Height Row -->
+      <div class="form-row-full">
+        <label for="heightInput">Height (cm)</label>
+        <input type="number" id="heightInput" placeholder="" step="0.1">
+      </div>
+
+      <button type="button" onclick="saveUsername()" class="continue-btn">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp" class="screen">
+  <!-- Overlay for app content -->
+  <div class="overlay">
+    <!-- Hidden username span for JS -->
+    <h2 style="display:none;">
+      <span id="displayUsername"></span>
+    </h2>
+
+<!-- Home Section -->
+<div id="homeSection" class="app-section">
+  <!-- Sticky Title Banner ONLY for Home -->
+  <div class="home-header">
+    <h1>Progress Pal</h1>
+  </div>
+
+  <div class="home-container">
+    <!-- Top stat cards -->
+    <div class="home-cards">
+      <div class="home-card">
+        <h3>Weight</h3>
+        <p class="home-value" id="homeWeight">- kg</p>
+        <span class="home-sub" id="homeWeightChange">- kg this year</span>
+      </div>
+
+      <div class="home-card">
+        <h3>Gym Visits</h3>
+        <p class="home-value" id="homeGymVisits">0</p>
+        <span class="home-sub">This year</span>
+      </div>
+    </div>
+
+    <!-- Graph container -->
+    <div class="home-graph">
+      <h3>Weekly Progress</h3>
+      <canvas id="progressChart"></canvas>
+    </div>
+
+    <!-- SVGs card for home section only -->
+    <div class="card">
+      <h3>Body Composition</h3>
+      <div class="home-svgs">
+        <div class="svg-item">
+          <p class="svg-label">Fat %</p>
+          <object id="fatSVG" type="image/svg+xml" data="images/human_silhouette_fat.svg"></object>
+          <p class="svg-percentage" id="fatPercentage">-</p>
+        </div>
+        <div class="svg-item">
+          <p class="svg-label">Muscle %</p>
+          <object id="muscleSVG" type="image/svg+xml" data="images/human_silhouette_muscle.svg"></object>
+          <p class="svg-percentage" id="musclePercentage">-</p>
+        </div>
+        <div class="svg-item">
+          <p class="svg-label">H2O %</p>
+          <object id="h2oSVG" type="image/svg+xml" data="images/human_silhouette_h2o.svg"></object>
+          <p class="svg-percentage" id="h2oPercentage">-</p>
+        </div>
+      </div>
+    </div>
+  </div> <!-- CLOSE home-container -->
+</div> <!-- CLOSE homeSection -->
+
+
+
+    <!-- Other sections hidden by default -->
+    <div id="workoutSection" class="app-section" style="display:none;">
+      <p>💪 Workout Tracker</p>
+    </div>
+
+    <div id="addSection" class="app-section" style="display:none;">
+      <div class="add-header">
+        <h1>Add New Entry</h1>
+      </div>
+      
+      <div class="add-container">
+        <form id="newEntryForm" class="entry-form">
+          <!-- Date Field -->
+          <div class="form-group">
+            <label for="entryDate">Date</label>
+            <input type="date" id="entryDate" name="entryDate" required>
+          </div>
+
+          <!-- Weight Field -->
+          <div class="form-group">
+            <label for="entryWeight">Weight (kg)</label>
+            <input type="number" id="entryWeight" name="entryWeight" placeholder="e.g., 82.4" step="0.1">
+          </div>
+
+          <!-- Fat % Field -->
+          <div class="form-group">
+            <label for="entryFat">Fat %</label>
+            <input type="number" id="entryFat" name="entryFat" placeholder="e.g., 24.5" step="0.1" min="0" max="100">
+          </div>
+
+          <!-- Muscle % Field -->
+          <div class="form-group">
+            <label for="entryMuscle">Muscle %</label>
+            <input type="number" id="entryMuscle" name="entryMuscle" placeholder="e.g., 38.2" step="0.1" min="0" max="100">
+          </div>
+
+          <!-- H2O % Field -->
+          <div class="form-group">
+            <label for="entryH2O">H2O %</label>
+            <input type="number" id="entryH2O" name="entryH2O" placeholder="e.g., 60.1" step="0.1" min="0" max="100">
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="submit-btn">Save Entry</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="progressSection" class="app-section" style="display:none;">
+      <div class="progress-header">
+        <button id="prevMonth" class="month-nav-btn"><i class="fas fa-chevron-left"></i></button>
+        <h1 id="calendarMonth">January 2026</h1>
+        <button id="nextMonth" class="month-nav-btn"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      
+      <div class="progress-container">
+        <div id="calendar" class="calendar">
+          <div class="calendar-header">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+          </div>
+          <div class="calendar-days" id="calendarDays"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry Detail Modal -->
+    <div id="entryModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <button class="modal-close" id="closeModal">&times;</button>
+        <h2 id="modalDate">Date</h2>
+        
+        <div class="modal-entry">
+          <div class="entry-row">
+            <span class="entry-label">Weight:</span>
+            <span class="entry-value" id="modalWeight">-</span>
+          </div>
+          
+          <div class="entry-row">
+            <span class="entry-label">Fat %:</span>
+            <span class="entry-value" id="modalFat">-</span>
+          </div>
+          
+          <div class="entry-row">
+            <span class="entry-label">Muscle %:</span>
+            <span class="entry-value" id="modalMuscle">-</span>
+          </div>
+          
+          <div class="entry-row">
+            <span class="entry-label">H2O %:</span>
+            <span class="entry-value" id="modalH2O">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="profileSection" class="app-section" style="display:none;">
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="avatar">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="profile-info">
+          <h2 id="profileUsername">Username</h2>
+          <p id="dateJoined"></p>
+        </div>
+      </div>
+
+      <!-- Account details cards -->
+      <div class="account-cards">
+        <div class="card" id="nameCard">
+          <h3>Account Information</h3>
+          <p id="displayFirstName">First Name: </p>
+          <p id="displayLastName">Last Name: </p>
+          <p id="displayUsernameCard">Username: </p>
+          <p id="displayDOB">Date of Birth: </p>
+          <p id="displayHeight">Height: </p>
+        </div>
+
+        <div class="card">
+          <h3>App Settings</h3>
+          <p>Notifications: On</p>
+          <p>Dark Mode: Enabled</p>
+        </div>
+
+        <div class="card danger-card">
+          <h3>Data Management</h3>
+          <button id="clearDataBtn" class="clear-btn">Clear All Saved Data</button>
+          <p class="warning-text">This will permanently delete all saved entries</p>
+        </div>
+      </div>
+    </div>
+  </div> <!-- end overlay -->
+
+  <!-- Bottom navigation fixed at bottom -->
+  <nav id="bottomNav">
+    <div class="nav-item"><i class="fas fa-home"></i></div>
+    <div class="nav-item"><i class="fas fa-dumbbell"></i></div>
+    <div class="nav-item center-btn"><i class="fas fa-plus"></i></div>
+    <div class="nav-item"><i class="fas fa-chart-line"></i></div>
+    <div class="nav-item"><i class="fas fa-user"></i></div>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Firebase v9 compat (works with firebase.initializeApp) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<!-- Your app logic (must be last) -->
+<script src="app.js"></script>
+</body>
+</html>
+

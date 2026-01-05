@@ -1,0 +1,753 @@
+/* ===== Variables ===== */
+:root {
+  --primary-color: #FFD700;
+  --background-image: url('welcome_screen_background.jpg');
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+
+  /* dark overlay via gradient + background image */
+  background: 
+    linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+    url('welcome_screen_background.jpg') center/cover no-repeat;
+}
+
+
+/* ===== Base Reset ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+  background: var(--background-image) center/cover no-repeat;
+}
+
+/* ===== Screens ===== */
+.screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* ===== Overlay for content animation ===== */
+.overlay {
+  text-align: center;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* App sections: hide by default and show when active */
+.app-section {
+  display: none;
+  width: 100%;
+  color: white; /* ensure visible on dark background */
+}
+.app-section.active {
+  display: block !important;
+}
+
+/* Splash fade-out */
+#splashScreen.fade-out .overlay {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* Login fade-in */
+#loginScreen .overlay {
+  opacity: 0; /* start invisible */
+  transform: translateY(20px); /* start slightly below */
+  transition: opacity 0.6s ease, transform 0.6s ease; /* animate to visible */
+}
+
+#loginScreen.show .overlay {
+  opacity: 1; /* fade in */
+  transform: translateY(0); /* slide into place */
+}
+
+/* Style for login labels */
+#loginScreen label {
+  display: inline-block;        /* allows padding + background */
+  background-color: #FFD700;    /* bright yellow */
+  color: black;                 /* black text */
+  padding: 6px 12px;            /* space inside the box */
+  border-radius: 10px;          /* rounded corners */
+  font-weight: bold;
+  margin-bottom: 6px;           /* spacing above inputs */
+}
+
+/* ===== Text Styling ===== */
+#appName {
+  font-family: 'Anton', sans-serif;
+  font-size: 10vw;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  text-shadow:
+    -2px -2px 0 #000,
+     2px -2px 0 #000,
+    -2px  2px 0 #000,
+     2px  2px 0 #000;
+}
+
+#slogan {
+  font-family: 'Anton', sans-serif;
+  font-size: 5vw;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  margin-top: 10px;
+}
+
+h2 {
+  color: white;
+  font-size: 8vw;
+  margin-bottom: 20px;
+}
+
+input, button {
+  width: 90%;
+  max-width: 400px;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-size: 4vw;
+  border: 1px solid #ccc;
+}
+
+/* Ensure date input has consistent styling */
+input[type="date"] {
+  padding: 12px;
+  height: 50px;
+  font-size: 4vw;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#bottomNav {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 10px); /* raises it above home indicator */
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #1e1e1e;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+  z-index: 100;
+  padding-bottom: 20px; /* optional extra space */
+  padding-top: 10px; /* optional extra space */
+}
+
+
+.nav-item {
+  color: #aaa; /* default icon color */
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.nav-item:hover {
+  color: var(--primary-color); /* highlight on hover */
+  transform: scale(1.2);
+}
+
+/* ===== Main App Background ===== */
+#mainApp {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* content starts at top */
+  align-items: center;         /* horizontally center content */
+  height: 100%;
+  width: 100%;
+  position: relative;          /* ensures bottomNav fixed works properly */
+  background: linear-gradient(to bottom, #1c1c1c, #4d4d4d);
+}
+
+/* ===== Main app overlay (sections container) ===== */
+#mainApp .overlay {
+  flex: 1;                     
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;        /* center items */
+  justify-content: flex-start; 
+  padding-top: 0px;           
+  overflow-y: auto;            
+
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Show main app overlay */
+#mainApp.show .overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Optional: fade out for screen swap */
+#mainApp.fade-out .overlay {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* Profile header: vertical and centered */
+.profile-header {
+  display: flex;
+  flex-direction: column;   /* stack avatar, username, date vertically */
+  align-items: center;      /* center horizontally */
+  margin-bottom: 30px;      /* spacing before cards */
+}
+
+/* Remove margin-right on avatar since now stacked */
+.avatar {
+  font-size: 80px;          /* slightly bigger if you want */
+  color: #FFD700;
+  margin: 0 0 10px 0;       /* bottom margin only */
+}
+
+/* Username & date styling */
+.profile-info h2 {
+  color: white;
+  font-size: 6vw;
+  margin-bottom: 5px;
+  text-align: center;       /* center text */
+}
+
+.profile-info p {
+  color: #ccc;
+  font-size: 4vw;
+  text-align: center;       /* center text */
+}
+
+/* Account cards centered */
+.account-cards {
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 0 auto;           /* center container horizontally */
+}
+
+.card {
+  background-color: #2a2a2a;
+  padding: 15px;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.card h3 {
+  margin-bottom: 10px;
+  font-size: 4.5vw;
+  color: var(--primary-color);
+}
+
+.card p {
+  margin-bottom: 5px;
+  font-size: 4vw;
+  color: #ccc;
+}
+
+/* Container for home section */
+.home-container {
+  width: 100%;
+  padding: 20px 8px 8px 8px;  /* top padding to match spacing between banner and cards */
+  box-sizing: border-box;
+}
+
+/* Cards wrapper */
+.home-cards {
+  display: flex;
+  gap: 12px;            /* space between cards */
+  width: 100%;           /* fill container */
+  flex-wrap: nowrap;     /* keep cards side by side */
+}
+
+/* Individual cards */
+.home-card {
+  flex: 1;               /* equal width */
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #2a2a2a;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  box-sizing: border-box;
+}
+
+/* Card text */
+.home-card h3 {
+  margin-bottom: 6px;
+  font-size: 4vw;
+  color: var(--primary-color);
+}
+
+.home-value {
+  font-size: 6vw;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.home-sub {
+  font-size: 3.5vw;
+  color: #ccc;
+}
+
+/* Graph below cards */
+.home-graph {
+  width: 100%;           /* fill container */
+  margin-top: 16px;      /* spacing from cards */
+  background-color: #2a2a2a;
+  padding: 16px;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  box-sizing: border-box;
+}
+
+/* Card spacing in home container */
+.home-container .card {
+  width: 100%;
+  margin-top: 16px;
+  box-sizing: border-box;
+}
+
+/* Home Page Sticky Header - smaller */
+.home-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  color: var(--primary-color);
+  text-align: center;
+  padding: 6px 0;           /* smaller vertical spacing */
+  font-family: 'Anton', sans-serif;
+  font-size: 20px;           /* smaller font size */
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  background: #1c1c1c;       /* ensures it covers content behind */
+}
+
+
+
+.home-svgs {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+  gap: 10px;
+}
+
+.svg-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.svg-label {
+  font-size: 3.5vw;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin: 0;
+}
+
+.home-svgs object {
+  width: 80px;       /* or whatever size fits your layout */
+  height: 120px;     /* adjust for your SVG aspect ratio */
+}
+
+.svg-percentage {
+  font-size: 4vw;
+  color: #ccc;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Home section padding for bottom nav */
+#homeSection {
+  padding-bottom: 100px;
+}
+/* ===== ADD NEW ENTRY SECTION ===== */
+.add-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  color: var(--primary-color);
+  text-align: center;
+  padding: 6px 0;
+  font-family: 'Anton', sans-serif;
+  font-size: 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  background: #1c1c1c;
+}
+
+.add-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.add-container {
+  width: 100%;
+  padding: 20px 0 8px 0;
+  box-sizing: border-box;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 4vw;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.form-group input {
+  padding: 12px;
+  border: 2px solid #444;
+  border-radius: 8px;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto;
+  line-height: 1.5;
+}
+
+#entryDate {
+  padding: 12px;
+  height: 50px;
+  font-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.form-group input::placeholder {
+  color: #888;
+}
+
+.submit-btn {
+  padding: 14px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  color: #000;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
+
+.submit-btn:hover {
+  background-color: #ffe55c;
+}
+
+/* Add section padding for bottom nav */
+#addSection {
+  padding-bottom: 0;
+}
+
+#addSection.active {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* ===== PROGRESS CHARTS SECTION ===== */
+.progress-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  color: var(--primary-color);
+  text-align: center;
+  padding: 6px 0;
+  font-family: 'Anton', sans-serif;
+  font-size: 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  background: #1c1c1c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+}
+
+.progress-header h1 {
+  margin: 0;
+  font-size: 24px;
+  flex: 1;
+  text-align: center;
+}
+
+.month-nav-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.month-nav-btn:active {
+  transform: scale(0.9);
+}
+
+.progress-container {
+  width: 100%;
+  padding: 20px 8px;
+  box-sizing: border-box;
+  padding-bottom: 100px;
+}
+
+.calendar {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.weekday {
+  text-align: center;
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 3vw;
+  padding: 10px 0;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: #3a3a3a;
+  color: white;
+  font-size: 3.5vw;
+  font-weight: bold;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+  border-color: var(--primary-color);
+  background-color: #404040;
+}
+
+.calendar-day.other-month {
+  color: #666;
+  background-color: transparent;
+  cursor: default;
+}
+
+.calendar-day.other-month:hover {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+.calendar-day.today {
+  background-color: var(--primary-color);
+  color: #000;
+  font-weight: bold;
+}
+
+.calendar-day.has-entry {
+  border-color: #4ECDC4;
+}
+
+/* Progress section padding for bottom nav */
+#progressSection {
+  padding-bottom: 0;
+}
+
+/* ===== ENTRY DETAIL MODAL ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content h2 {
+  color: var(--primary-color);
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-size: 5vw;
+}
+
+.modal-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.entry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #3a3a3a;
+  border-radius: 8px;
+}
+
+.entry-label {
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 4vw;
+}
+
+.entry-value {
+  color: white;
+  font-size: 4vw;
+  font-weight: bold;
+}
+
+/* ===== DATA MANAGEMENT ===== */
+.danger-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clear-btn {
+  padding: 12px;
+  border: 2px solid #FF6B6B;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #FF6B6B;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: center; 
+}
+
+.clear-btn:active {
+  background-color: #FF6B6B;
+  color: white;
+  transform: scale(0.98);
+}
+
+.warning-text {
+  color: #FF6B6B;
+  font-size: 3vw;
+  margin: 0;
+  text-align: center;
+}
+
+#usernameLoginScreen {
+  display: none;
+}
