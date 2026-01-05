@@ -109,11 +109,32 @@ function goFromSplash() {
 
   function hideSplash() {
     splash.style.display = 'none';
-    // For now, always go to login screen (we're not doing auto‑login)
-    document.getElementById("usernameLoginScreen").style.display = "flex";
+
+    // ⭐ AUTO‑LOGIN LOGIC ⭐
+    const savedUsername = localStorage.getItem("savedUsername");
+
+    if (savedUsername) {
+      // Try to auto-load the user's profile
+      db.collection("users").doc(savedUsername).get().then(doc => {
+        if (doc.exists) {
+          const profile = doc.data().profile;
+          setUserProfile(profile);
+          loadEntries(savedUsername);
+          showMainApp();
+        } else {
+          // If somehow the saved username doesn't exist anymore
+          localStorage.removeItem("savedUsername");
+          document.getElementById("usernameLoginScreen").style.display = "flex";
+        }
+      });
+    } else {
+      // No saved username → show username login screen
+      document.getElementById("usernameLoginScreen").style.display = "flex";
+    }
   }
 
   splash.addEventListener('transitionend', hideSplash, { once: true });
+
   setTimeout(() => {
     splash.removeEventListener('transitionend', hideSplash);
     hideSplash();
@@ -185,6 +206,9 @@ function saveUsername() {
     alert('Please fill in all fields: username, first name, last name, date of birth, and height');
     return;
   }
+
+  // ⭐ Save username on this device
+  localStorage.setItem("savedUsername", username);
 
   const profileData = {
     username,
@@ -687,11 +711,16 @@ function checkUsername() {
     .get()
     .then(doc => {
       if (doc.exists) {
+
+        // ⭐ REMEMBER USERNAME ON THIS DEVICE
+        localStorage.setItem("savedUsername", username);
+
         // USER EXISTS → LOGIN
         const profile = doc.data().profile;
         setUserProfile(profile);
         loadEntries(username);
         showMainApp();
+
       } else {
         // USER DOES NOT EXIST → SHOW SIGNUP FORM
         alert("Username not found. Please create an account.");
@@ -712,5 +741,34 @@ function checkUsername() {
       console.error("Error checking username:", err);
       alert("There was an error checking the username.");
     });
+}
 
+document.getElementById("logoutBtn").addEventListener("click", logoutUser);
+
+function logoutUser() {
+  // Remove saved username
+  localStorage.removeItem("savedUsername");
+
+  const app = document.getElementById("mainApp");
+  const loginScreen = document.getElementById("usernameLoginScreen");
+
+  // Add fade-out class
+  app.classList.add("fade-out-screen");
+
+  // Trigger fade-out
+  setTimeout(() => {
+    app.classList.add("hide");
+
+    // After fade-out completes, hide main app and show login
+    setTimeout(() => {
+      app.style.display = "none";
+      app.classList.remove("fade-out-screen", "hide");
+
+      // Show username login screen
+      loginScreen.style.display = "flex";
+      document.getElementById("loginUsernameInput").value = "";
+
+    }, 500); // matches CSS transition time
+
+  }, 10);
 }

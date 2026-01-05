@@ -751,3 +751,13 @@ button {
 #usernameLoginScreen {
   display: none;
 }
+
+/* Fade-out animation for logging out */
+.fade-out-screen {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.fade-out-screen.hide {
+  opacity: 0;
+}
