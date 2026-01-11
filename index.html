@@ -128,15 +128,73 @@
         </div>
       </div>
     </div>
+    <!-- Measurements Card -->
+<div class="card">
+  <h3>Measurements</h3>
+
+  <div class="measurements-grid">
+
+    <div class="measurement-item">
+      <p class="measurement-label">Left Bicep (Relaxed)</p>
+      <p class="measurement-value" id="homeLeftBicepRelaxed">-</p>
+      <p class="measurement-sub" id="homeLeftBicepRelaxedChange">- this year</p>
+    </div>
+
+    <div class="measurement-item">
+      <p class="measurement-label">Left Bicep (Flexed)</p>
+      <p class="measurement-value" id="homeLeftBicepFlexed">-</p>
+      <p class="measurement-sub" id="homeLeftBicepFlexedChange">- this year</p>
+    </div>
+
+    <div class="measurement-item">
+      <p class="measurement-label">Right Bicep (Relaxed)</p>
+      <p class="measurement-value" id="homeRightBicepRelaxed">-</p>
+      <p class="measurement-sub" id="homeRightBicepRelaxedChange">- this year</p>
+    </div>
+
+    <div class="measurement-item">
+      <p class="measurement-label">Right Bicep (Flexed)</p>
+      <p class="measurement-value" id="homeRightBicepFlexed">-</p>
+      <p class="measurement-sub" id="homeRightBicepFlexedChange">- this year</p>
+    </div>
+
+    <div class="measurement-item">
+      <p class="measurement-label">Chest</p>
+      <p class="measurement-value" id="homeChest">-</p>
+      <p class="measurement-sub" id="homeChestChange">- this year</p>
+    </div>
+
+    <div class="measurement-item">
+      <p class="measurement-label">Waist</p>
+      <p class="measurement-value" id="homeWaist">-</p>
+      <p class="measurement-sub" id="homeWaistChange">- this year</p>
+    </div>
+
+  </div>
+</div>
+
   </div> <!-- CLOSE home-container -->
 </div> <!-- CLOSE homeSection -->
 
 
 
-    <!-- Other sections hidden by default -->
-    <div id="workoutSection" class="app-section" style="display:none;">
-      <p>💪 Workout Tracker</p>
-    </div>
+<div id="workoutSection" class="app-section" style="display:none;">
+
+  <div class="workout-header">
+    <button class="back-btn" onclick="workoutGoBack()">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <h1 id="workoutHeaderTitle">Workout</h1>
+  </div>
+
+  <div id="workoutContainer"></div>
+
+</div>
+<div class="add-tabs">
+  <button id="gymTab" class="add-tab active" onclick="showGymForm()">Gym Entry</button>
+  <button id="measureTab" class="add-tab" onclick="showMeasurementsForm()">Measurements</button>
+</div>
 
     <div id="addSection" class="app-section" style="display:none;">
       <div class="add-header">
@@ -145,39 +203,81 @@
       
       <div class="add-container">
         <form id="newEntryForm" class="entry-form">
-          <!-- Date Field -->
-          <div class="form-group">
-            <label for="entryDate">Date</label>
-            <input type="date" id="entryDate" name="entryDate" required>
-          </div>
 
-          <!-- Weight Field -->
-          <div class="form-group">
-            <label for="entryWeight">Weight (kg)</label>
-            <input type="number" id="entryWeight" name="entryWeight" placeholder="e.g., 82.4" step="0.1">
-          </div>
+  <!-- Date (full width) -->
+  <div class="form-group-full">
+    <label for="entryDate">Date</label>
+    <input type="date" id="entryDate" name="entryDate" required>
+  </div>
 
-          <!-- Fat % Field -->
-          <div class="form-group">
-            <label for="entryFat">Fat %</label>
-            <input type="number" id="entryFat" name="entryFat" placeholder="e.g., 24.5" step="0.1" min="0" max="100">
-          </div>
+  <!-- Weight (full width) -->
+  <div class="form-group-full">
+    <label for="entryWeight">Weight (kg)</label>
+    <input type="number" id="entryWeight" name="entryWeight" placeholder="e.g., 82.4" step="0.1">
+  </div>
 
-          <!-- Muscle % Field -->
-          <div class="form-group">
-            <label for="entryMuscle">Muscle %</label>
-            <input type="number" id="entryMuscle" name="entryMuscle" placeholder="e.g., 38.2" step="0.1" min="0" max="100">
-          </div>
+  <!-- Body Composition (3 columns) -->
+  <div class="form-row-3">
+    <div class="form-group">
+      <label for="entryFat">Fat %</label>
+      <input type="number" id="entryFat" name="entryFat" placeholder="e.g., 24.5" step="0.1" min="0" max="100">
+    </div>
 
-          <!-- H2O % Field -->
-          <div class="form-group">
-            <label for="entryH2O">H2O %</label>
-            <input type="number" id="entryH2O" name="entryH2O" placeholder="e.g., 60.1" step="0.1" min="0" max="100">
-          </div>
+    <div class="form-group">
+      <label for="entryMuscle">Muscle %</label>
+      <input type="number" id="entryMuscle" name="entryMuscle" placeholder="e.g., 38.2" step="0.1" min="0" max="100">
+    </div>
 
-          <!-- Submit Button -->
-          <button type="submit" class="submit-btn">Save Entry</button>
-        </form>
+    <div class="form-group">
+      <label for="entryH2O">H2O %</label>
+      <input type="number" id="entryH2O" name="entryH2O" placeholder="e.g., 60.1" step="0.1" min="0" max="100">
+    </div>
+  </div>
+
+  <!-- Measurements Title -->
+  <h3 class="form-section-title">Measurements</h3>
+
+  <!-- Measurements (2-column rows) -->
+  <div class="form-row-2">
+    <div class="form-group">
+      <label for="entryLeftBicepRelaxed">Left Bicep (Relaxed)</label>
+      <input type="number" id="entryLeftBicepRelaxed" step="0.1" placeholder='e.g., 14.2"'>
+    </div>
+
+    <div class="form-group">
+      <label for="entryLeftBicepFlexed">Left Bicep (Flexed)</label>
+      <input type="number" id="entryLeftBicepFlexed" step="0.1" placeholder='e.g., 15.1"'>
+    </div>
+  </div>
+
+  <div class="form-row-2">
+    <div class="form-group">
+      <label for="entryRightBicepRelaxed">Right Bicep (Relaxed)</label>
+      <input type="number" id="entryRightBicepRelaxed" step="0.1" placeholder='e.g., 14.4"'>
+    </div>
+
+    <div class="form-group">
+      <label for="entryRightBicepFlexed">Right Bicep (Flexed)</label>
+      <input type="number" id="entryRightBicepFlexed" step="0.1" placeholder='e.g., 15.3"'>
+    </div>
+  </div>
+
+  <div class="form-row-2">
+    <div class="form-group">
+      <label for="entryChest">Chest</label>
+      <input type="number" id="entryChest" step="0.1" placeholder='e.g., 42.8"'>
+    </div>
+
+    <div class="form-group">
+      <label for="entryWaist">Waist</label>
+      <input type="number" id="entryWaist" step="0.1" placeholder='e.g., 33.5"'>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button type="submit" class="submit-btn">Save Entry</button>
+
+</form>
       </div>
     </div>
 
@@ -230,6 +330,36 @@
             <span class="entry-label">H2O %:</span>
             <span class="entry-value" id="modalH2O">-</span>
           </div>
+          <div class="entry-row">
+  <span class="entry-label">Left Bicep (Relaxed):</span>
+  <span class="entry-value" id="modalLeftBicepRelaxed">-</span>
+</div>
+
+<div class="entry-row">
+  <span class="entry-label">Left Bicep (Flexed):</span>
+  <span class="entry-value" id="modalLeftBicepFlexed">-</span>
+</div>
+
+<div class="entry-row">
+  <span class="entry-label">Right Bicep (Relaxed):</span>
+  <span class="entry-value" id="modalRightBicepRelaxed">-</span>
+</div>
+
+<div class="entry-row">
+  <span class="entry-label">Right Bicep (Flexed):</span>
+  <span class="entry-value" id="modalRightBicepFlexed">-</span>
+</div>
+
+<div class="entry-row">
+  <span class="entry-label">Chest:</span>
+  <span class="entry-value" id="modalChest">-</span>
+</span>
+</div>
+
+<div class="entry-row">
+  <span class="entry-label">Waist:</span>
+  <span class="entry-value" id="modalWaist">-</span>
+</div>
         </div>
       </div>
     </div>

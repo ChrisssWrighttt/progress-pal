@@ -396,6 +396,42 @@ button {
 #homeSection {
   padding-bottom: 100px;
 }
+
+
+.measurements-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.measurement-item {
+  background-color: #3a3a3a;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.measurement-label {
+  font-size: 3.5vw;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.measurement-value {
+  font-size: 5vw;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 2px;
+}
+
+.measurement-sub {
+  font-size: 3vw;
+  color: #ccc;
+}
+
+
 /* ===== ADD NEW ENTRY SECTION ===== */
 .add-header {
   position: sticky;
@@ -429,8 +465,8 @@ button {
 }
 
 .entry-form {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   width: 100%;
   max-width: 400px;
@@ -463,6 +499,15 @@ button {
   max-width: none !important;
   height: auto;
   line-height: 1.5;
+}
+
+.form-group-full input {
+  padding: 12px;
+  border: 2px solid #444;
+  border-radius: 8px;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 16px;
 }
 
 #entryDate {
@@ -749,7 +794,21 @@ button {
 }
 
 #usernameLoginScreen {
-  display: none;
+  display: none;                 /* stays hidden until JS shows it */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* ⭐ DO NOT put display:flex here */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  background: transparent;       /* important: do NOT override your app background */
+  z-index: 5;
 }
 
 /* Fade-out animation for logging out */
@@ -761,3 +820,206 @@ button {
 .fade-out-screen.hide {
   opacity: 0;
 }
+
+/* ===== WORKOUT TRACKER MENUS ===== */
+
+.menu-list {
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+.menu-item {
+  background-color: #2a2a2a;
+  padding: 16px;
+  border-radius: 12px;
+  color: white;
+  font-size: 5vw;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.menu-item:active {
+  transform: scale(0.97);
+}
+
+/* Workout section heading */
+#workoutSection h2 {
+  font-family: 'Anton', sans-serif;
+  font-size: 7vw;
+  color: var(--primary-color);
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Workout tracking form spacing */
+#workoutEntryForm {
+  margin-top: 20px;
+  padding-bottom: 100px;
+}
+
+/* Workout chart container */
+#workoutChart {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
+  background-color: #2a2a2a;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* ===== WORKOUT HEADER ===== */
+.workout-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: #1c1c1c;
+
+  /* ⭐ Make header tall enough for the 48px button */
+  height: 60px;
+
+  display: flex;
+  align-items: center;   /* vertically centers the title */
+  justify-content: center;
+  padding: 0 12px;       /* remove vertical padding */
+
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.workout-header h1 {
+  margin: 0;
+  font-family: 'Anton', sans-serif;
+  font-size: 22px;
+  color: var(--primary-color);
+}
+
+#workoutSection {
+  width: 100%;
+  align-self: stretch;   /* override align-items:center on parent */
+}
+
+.back-btn {
+  position: absolute;
+  left: 12px;
+  top: 35%;
+  transform: translateY(-50%);
+
+  /* Make it a physical button */
+  background-color: #2a2a2a;   /* matches your card style */
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+
+  /* Large tap area */
+  width: 48px;
+  height: 48px;
+
+  /* Center the icon inside */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Icon color */
+  color: var(--primary-color);
+  font-size: 24px;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.back-btn:active {
+  background-color: #333;
+  transform: translateY(-50%) scale(0.95);
+}
+
+.menu-item .icon {
+  margin-right: 10px;
+  color: var(--primary-color);
+  font-size: 20px;
+}
+
+.slide-in {
+  animation: slideIn 0.35s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.form-group-full {
+  grid-column: span 2;
+}
+
+.form-row-2 {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-row-3 {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.entry-form .submit-btn {
+  grid-column: span 2;
+}
+
+.form-section-title {
+  grid-column: span 2;
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+.add-tabs {
+  display: none;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 16px;
+}
+
+.add-tab {
+  flex: 1;
+  padding: 12px;
+  background: #2a2a2a;
+  color: white;
+  border: 2px solid #444;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.add-tab.active {
+  background: var(--primary-color) !important;
+  color: black !important;
+  border-color: var(--primary-color) !important;
+}
+
+
+#addSection.active .add-tabs { display: flex; }
