@@ -285,30 +285,33 @@ function updateHomePageBodyComposition() {
     return;
   }
 
-  const recentEntry = [...userEntries].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-
-  if (recentEntry.fat != null && recentEntry.fat !== '') {
-    fatPercentageEl.textContent = recentEntry.fat + '%';
-  } else {
-    fatPercentageEl.textContent = '-';
+  // Helper: find the most recent entry that actually has this field filled
+  function findMostRecentValue(key) {
+    const sorted = [...userEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
+    for (const entry of sorted) {
+      if (entry[key] != null && entry[key] !== "") {
+        return entry[key];
+      }
+    }
+    return null;
   }
 
-  if (recentEntry.muscle != null && recentEntry.muscle !== '') {
-    musclePercentageEl.textContent = recentEntry.muscle + '%';
-  } else {
-    musclePercentageEl.textContent = '-';
-  }
+  // Get the most recent valid values
+  const fat = findMostRecentValue("fat");
+  const muscle = findMostRecentValue("muscle");
+  const h2o = findMostRecentValue("h2o");
 
-  if (recentEntry.h2o != null && recentEntry.h2o !== '') {
-    h2oPercentageEl.textContent = recentEntry.h2o + '%';
-  } else {
-    h2oPercentageEl.textContent = '-';
-  }
+  // Update text
+  fatPercentageEl.textContent = fat != null ? fat + "%" : "-";
+  musclePercentageEl.textContent = muscle != null ? muscle + "%" : "-";
+  h2oPercentageEl.textContent = h2o != null ? h2o + "%" : "-";
 
+  // SVG elements
   const fatSVG = document.getElementById('fatSVG');
   const muscleSVG = document.getElementById('muscleSVG');
   const h2oSVG = document.getElementById('h2oSVG');
 
+  // Retry logic stays the same
   const fillSVGWithRetry = (svg, value, retries = 3) => {
     if (!svg) return;
 
@@ -324,16 +327,12 @@ function updateHomePageBodyComposition() {
     svg.addEventListener('load', () => tryFill(), { once: true });
   };
 
-  if (fatSVG && recentEntry.fat != null && recentEntry.fat !== '') {
-    fillSVGWithRetry(fatSVG, parseFloat(recentEntry.fat));
-  }
-  if (muscleSVG && recentEntry.muscle != null && recentEntry.muscle !== '') {
-    fillSVGWithRetry(muscleSVG, parseFloat(recentEntry.muscle));
-  }
-  if (h2oSVG && recentEntry.h2o != null && recentEntry.h2o !== '') {
-    fillSVGWithRetry(h2oSVG, parseFloat(recentEntry.h2o));
-  }
+  // Update SVGs using the same most-recent-value logic
+  if (fatSVG && fat != null) fillSVGWithRetry(fatSVG, parseFloat(fat));
+  if (muscleSVG && muscle != null) fillSVGWithRetry(muscleSVG, parseFloat(muscle));
+  if (h2oSVG && h2o != null) fillSVGWithRetry(h2oSVG, parseFloat(h2o));
 }
+
 
 // ===== HOME PAGE STATS =====
 function updateHomePageWeight() {
