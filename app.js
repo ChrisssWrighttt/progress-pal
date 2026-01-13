@@ -708,13 +708,18 @@ if (clearDataBtn) {
 
     const userRef = db.collection("users").doc(currentUser);
 
-    // Delete entries + workouts in parallel
     Promise.all([
       deleteSubcollection(userRef, "entries"),
       deleteSubcollection(userRef, "workouts")
     ])
       .then(() => {
+        // Clear local memory
         userEntries = [];
+
+        // Reload from Firestore to confirm everything is gone
+        return loadEntries(currentUser);
+      })
+      .then(() => {
         updateHomePageWeight();
         updateHomePageGymVisits();
         updateHomePageBodyComposition();
@@ -1132,7 +1137,30 @@ function workoutGoBack() {
 }
 
 function updateHomePageMeasurements() {
-  if (!userEntries || userEntries.length === 0) return;
+  // RESET UI IF NO ENTRIES
+  if (!userEntries || userEntries.length === 0) {
+    const fields = [
+      "homeLeftBicepRelaxed",
+      "homeLeftBicepRelaxedChange",
+      "homeLeftBicepFlexed",
+      "homeLeftBicepFlexedChange",
+      "homeRightBicepRelaxed",
+      "homeRightBicepRelaxedChange",
+      "homeRightBicepFlexed",
+      "homeRightBicepFlexedChange",
+      "homeChest",
+      "homeChestChange",
+      "homeWaist",
+      "homeWaistChange"
+    ];
+
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = "-";
+    });
+
+    return;
+  }
 
   const currentYear = new Date().getFullYear();
 
@@ -1140,7 +1168,30 @@ function updateHomePageMeasurements() {
     return new Date(e.date + "T00:00:00").getFullYear() === currentYear;
   });
 
-  if (yearEntries.length === 0) return;
+  // RESET UI IF NO ENTRIES THIS YEAR
+  if (yearEntries.length === 0) {
+    const fields = [
+      "homeLeftBicepRelaxed",
+      "homeLeftBicepRelaxedChange",
+      "homeLeftBicepFlexed",
+      "homeLeftBicepFlexedChange",
+      "homeRightBicepRelaxed",
+      "homeRightBicepRelaxedChange",
+      "homeRightBicepFlexed",
+      "homeRightBicepFlexedChange",
+      "homeChest",
+      "homeChestChange",
+      "homeWaist",
+      "homeWaistChange"
+    ];
+
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = "-";
+    });
+
+    return;
+  }
 
   const sorted = [...yearEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
   const first = sorted[0];
@@ -1176,25 +1227,18 @@ function updateHomePageMeasurements() {
   set("homeWaist", "homeWaistChange", first.waist, last.waist);
 }
 
-function showGymForm() {
-  document.getElementById("gymEntryForm").style.display = "grid";
-  document.getElementById("measurementForm").style.display = "none";
-
-  document.getElementById("gymTab").classList.add("active");
-  document.getElementById("measureTab").classList.remove("active");
-}
-
-function showMeasurementsForm() {
-  document.getElementById("gymEntryForm").style.display = "none";
-  document.getElementById("measurementForm").style.display = "grid";
-
-  document.getElementById("measureTab").classList.add("active");
-  document.getElementById("gymTab").classList.remove("active");
-}
 
 function saveMeasurements() {
-  const entry = {
-    date: new Date().toISOString().split("T")[0], // auto timestamp
+  if (!currentUser) {
+    alert("No user logged in");
+    return;
+  }
+
+  const date = new Date().toISOString().split("T")[0];
+
+  const entryData = {
+    date,
+    timestamp: new Date().toISOString(),
     leftBicepRelaxed: parseFloat(mLeftRelaxed.value) || null,
     leftBicepFlexed: parseFloat(mLeftFlexed.value) || null,
     rightBicepRelaxed: parseFloat(mRightRelaxed.value) || null,
@@ -1204,10 +1248,28 @@ function saveMeasurements() {
     isMeasurementOnly: true
   };
 
-  userEntries.push(entry);
-  saveEntriesToFirestore(username, userEntries);
+  db.collection("users")
+    .doc(currentUser)
+    .collection("entries")
+    .doc(date)
+    .set(entryData, { merge: true })
+    .then(() => {
+      // Update local memory
+      const idx = userEntries.findIndex(e => e.date === date);
+      if (idx !== -1) {
+        userEntries[idx] = { ...userEntries[idx], ...entryData };
+      } else {
+        userEntries.push(entryData);
+      }
 
-  updateHomePageMeasurements();
+      updateHomePageMeasurements();
+      generateCalendar(currentCalendarDate);
 
-  alert("Measurements saved!");
+      alert("Measurements saved!");
+    })
+    .catch(err => {
+      console.error("Error saving measurements:", err);
+      alert("There was an error saving your measurements.");
+    });
 }
+
