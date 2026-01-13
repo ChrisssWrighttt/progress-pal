@@ -1137,71 +1137,75 @@ function workoutGoBack() {
 }
 
 function updateHomePageMeasurements() {
-  // RESET UI IF NO ENTRIES
-  if (!userEntries || userEntries.length === 0) {
-    const fields = [
-      "homeLeftBicepRelaxed",
-      "homeLeftBicepRelaxedChange",
-      "homeLeftBicepFlexed",
-      "homeLeftBicepFlexedChange",
-      "homeRightBicepRelaxed",
-      "homeRightBicepRelaxedChange",
-      "homeRightBicepFlexed",
-      "homeRightBicepFlexedChange",
-      "homeChest",
-      "homeChestChange",
-      "homeWaist",
-      "homeWaistChange"
-    ];
+  const fields = [
+    "homeLeftBicepRelaxed",
+    "homeLeftBicepRelaxedChange",
+    "homeLeftBicepFlexed",
+    "homeLeftBicepFlexedChange",
+    "homeRightBicepRelaxed",
+    "homeRightBicepRelaxedChange",
+    "homeRightBicepFlexed",
+    "homeRightBicepFlexedChange",
+    "homeChest",
+    "homeChestChange",
+    "homeWaist",
+    "homeWaistChange"
+  ];
 
+  // Helper to reset UI
+  const resetUI = () => {
     fields.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = "-";
     });
+  };
 
+  // No entries at all
+  if (!userEntries || userEntries.length === 0) {
+    resetUI();
     return;
   }
 
   const currentYear = new Date().getFullYear();
 
-  const yearEntries = userEntries.filter(e => {
-    return new Date(e.date + "T00:00:00").getFullYear() === currentYear;
-  });
+  // Only entries from this year
+  const yearEntries = userEntries.filter(e =>
+    new Date(e.date + "T00:00:00").getFullYear() === currentYear
+  );
 
-  // RESET UI IF NO ENTRIES THIS YEAR
   if (yearEntries.length === 0) {
-    const fields = [
-      "homeLeftBicepRelaxed",
-      "homeLeftBicepRelaxedChange",
-      "homeLeftBicepFlexed",
-      "homeLeftBicepFlexedChange",
-      "homeRightBicepRelaxed",
-      "homeRightBicepRelaxedChange",
-      "homeRightBicepFlexed",
-      "homeRightBicepFlexedChange",
-      "homeChest",
-      "homeChestChange",
-      "homeWaist",
-      "homeWaistChange"
-    ];
-
-    fields.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = "-";
-    });
-
+    resetUI();
     return;
   }
 
-  const sorted = [...yearEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
-  const first = sorted[0];
-  const last = sorted[sorted.length - 1];
+  // Only entries that actually contain measurements
+  const measurementEntries = yearEntries.filter(e =>
+    e.leftBicepRelaxed != null ||
+    e.leftBicepFlexed != null ||
+    e.rightBicepRelaxed != null ||
+    e.rightBicepFlexed != null ||
+    e.chest != null ||
+    e.waist != null
+  );
+
+  if (measurementEntries.length === 0) {
+    resetUI();
+    return;
+  }
+
+  // Sort measurement entries by date
+  const sorted = [...measurementEntries].sort((a, b) =>
+    new Date(a.date) - new Date(b.date)
+  );
+
+  const first = sorted[0];                     // earliest measurement
+  const last = sorted[sorted.length - 1];      // latest measurement
 
   const set = (idValue, idChange, firstVal, lastVal) => {
     const valueEl = document.getElementById(idValue);
     const changeEl = document.getElementById(idChange);
 
-    if (!lastVal) {
+    if (lastVal == null) {
       valueEl.textContent = "-";
       changeEl.textContent = "- this year";
       return;
@@ -1209,7 +1213,7 @@ function updateHomePageMeasurements() {
 
     valueEl.textContent = lastVal + '"';
 
-    if (!firstVal) {
+    if (firstVal == null) {
       changeEl.textContent = "0 this year";
       return;
     }
